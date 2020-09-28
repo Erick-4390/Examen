@@ -1,10 +1,6 @@
-# PHP
-# Test and package your PHP application.
-# Add steps that run tests, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/php
-
+# https://docs.microsoft.com/azure/devops/pipelines/ecosystems/php
 pool:
-  vmImage: 'Ubuntu 16.04'
+  vmImage: 'ubuntu-16.04'
 
 variables:
   phpVersion: 7.2
@@ -18,6 +14,15 @@ steps:
     sudo update-alternatives --set phar.phar /usr/bin/phar.phar$(phpVersion)
     php -version
   displayName: 'Use PHP version $(phpVersion)'
-
+  
 - script: composer install --no-interaction --prefer-dist
   displayName: 'composer install'
+  
+ - script: ./phpunit
+  displayName: 'Run tests with phpunit'
+  
+ - task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(system.defaultWorkingDirectory)'
+    includeRootFolder: false
+- task: PublishBuildArtifacts@1
